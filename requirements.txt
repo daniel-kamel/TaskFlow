@@ -7,6 +7,7 @@ Jinja2==3.1.2    # Templating
 Flask-SQLAlchemy==3.0.3
 SQLAlchemy==2.0.19
 psycopg2-binary==2.9.7  # PostgreSQL adapter (remove if using SQLite/MySQL)
+dotenv==0.9.9      # Environment variable management
 
 # User Authentication
 Flask-Login==0.6.2
