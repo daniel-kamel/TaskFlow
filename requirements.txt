@@ -1,0 +1,22 @@
+# Core Flask
+Flask==2.3.2
+Werkzeug==2.3.7  # Password hashing and security
+Jinja2==3.1.2    # Templating
+
+# Database & ORM
+Flask-SQLAlchemy==3.0.3
+SQLAlchemy==2.0.19
+psycopg2-binary==2.9.7  # PostgreSQL adapter (remove if using SQLite/MySQL)
+
+# User Authentication
+Flask-Login==0.6.2
+Flask-WTF==1.1.1       # Forms (for registration/login)
+WTForms==3.0.1         # Form validation
+email-validator==2.0.0 # Email field validation
+
+# Frontend (minimal)
+Bootstrap-Flask==2.3.3  # Bootstrap 5 integration
+
+# Deployment (optional)
+gunicorn==20.1.0       # Production WSGI server
+python-dotenv==1.0.0   # Environment variables
