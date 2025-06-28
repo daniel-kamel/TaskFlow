@@ -1,0 +1,53 @@
+"""
+models module for TaskFlow application.
+Defines the User and Task models with relationships and authentication methods.
+"""
+from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+
+# Initialize SQLAlchemy
+db = SQLAlchemy()
+
+class User(db.Model, UserMixin):
+    """
+    User model for authentication and task ownership.
+    """
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password_hash = db.Column(db.String(128))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    tasks = db.relationship('Task', backref='author', lazy=True, cascade='all, delete-orphan')
+
+    def set_password(self, password):
+        """Hashes and stores the password securely."""
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        """Verifies the password against the stored hash."""
+        return check_password_hash(self.password_hash, password)
+
+    def __repr__(self):
+        return f'<User {self.username}>'
+
+
+class Task(db.Model):
+    """
+    Task model with user association.
+    """
+    __tablename__ = 'tasks'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    status = db.Column(db.String(20), default='Pending')  # e.g., 'Pending', 'Completed'
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    due_date = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __repr__(self):
+        return f'<Task {self.title} (Status: {self.status})>'
