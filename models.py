@@ -19,12 +19,22 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    tasks = db.relationship('Task', backref='author', lazy=True, cascade='all, delete-orphan')
+    tasks = db.relationship('Task', backref='author', lazy=True)
+
+    def __init__(self, **kwargs):
+        # Enforce password requirement on object creation
+        if 'password' not in kwargs:
+            raise ValueError("Password is required")
+        password = kwargs.pop('password')
+        super().__init__(**kwargs)
+        self.set_password(password)  # Auto-hash during creation
 
     def set_password(self, password):
-        """Hashes and stores the password securely."""
+        """Hashes and stores the password."""
+        if not password:
+            raise ValueError("Password cannot be empty")
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
