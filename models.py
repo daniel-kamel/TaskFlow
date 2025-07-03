@@ -57,7 +57,7 @@ class Task(db.Model):
     status = db.Column(db.String(20), default='Pending')  # e.g., 'Pending', 'Completed'
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     due_date = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     def __repr__(self):
         return f'<Task {self.title} (Status: {self.status})>'
