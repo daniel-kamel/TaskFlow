@@ -97,6 +97,50 @@ def create_task():
         return redirect(url_for('index'))
     return render_template('create_task.html')
 
+@app.route('/edit-task/<int:task_id>', methods=['GET', 'POST'])
+@login_required
+def edit_task(task_id):
+    """Edit task page."""
+    task = Task.query.get_or_404(task_id)
+    # Ensure the task belongs to the current user
+    if task.user_id != current_user.id:
+        flash('You can only edit your own tasks.', 'error')
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        task.title = request.form['title']
+        task.description = request.form.get('description')
+        task.status = request.form.get('status', 'Pending')
+        due_date = request.form.get('due_date')
+        from datetime import datetime
+        due_date_obj = None
+        if due_date:
+            try:
+                due_date_obj = datetime.strptime(due_date, '%Y-%m-%d')
+            except ValueError:
+                flash('Invalid due date format.', 'error')
+                return redirect(url_for('edit_task', task_id=task_id))
+        task.due_date = due_date_obj
+        db.session.commit()
+        flash('Task updated successfully!')
+        return redirect(url_for('index'))
+    return render_template('edit_task.html', task=task)
+
+@app.route('/delete-task/<int:task_id>', methods=['POST'])
+@login_required
+def delete_task(task_id):
+    """Delete task."""
+    task = Task.query.get_or_404(task_id)
+    # Ensure the task belongs to the current user
+    if task.user_id != current_user.id:
+        flash('You can only delete your own tasks.', 'error')
+        return redirect(url_for('index'))
+
+    db.session.delete(task)
+    db.session.commit()
+    flash('Task deleted successfully!')
+    return redirect(url_for('index'))
+
 @app.cli.command("init-db")
 def init_db():
     db.create_all()
