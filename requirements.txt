@@ -21,3 +21,4 @@ Bootstrap-Flask==2.3.3  # Bootstrap 5 integration
 # Deployment (optional)
 gunicorn==20.1.0       # Production WSGI server
 python-dotenv==1.0.0   # Environment variables
+pytest==8.4.1
