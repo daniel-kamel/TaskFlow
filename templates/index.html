@@ -23,6 +23,11 @@
     {% endfor %}
   </div>
 {% else %}
-  <div class="alert alert-info">You have no tasks yet.</div>
+  <div class="text-center py-5">
+    <div class="alert alert-light border" role="alert">
+      <h4 class="alert-heading">No tasks yet!</h4>
+      <p class="mb-0">Get started by creating your first task.</p>
+    </div>
+  </div>
 {% endif %}
 {% endblock %}

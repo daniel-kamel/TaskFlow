@@ -82,16 +82,15 @@ def create_task():
         title = request.form['title']
         description = request.form.get('description')
         due_date = request.form.get('due_date')
-        status = request.form.get('status', 'Pending')
         from datetime import datetime
         due_date_obj = None
         if due_date:
             try:
                 due_date_obj = datetime.strptime(due_date, '%Y-%m-%d')
             except ValueError:
-                flash('Invalid due date format.')
+                flash('Invalid due date format.', 'error')
                 return redirect(url_for('create_task'))
-        task = Task(title=title, description=description, due_date=due_date_obj, status=status, user_id=current_user.id)
+        task = Task(title=title, description=description, due_date=due_date_obj, user_id=current_user.id)
         db.session.add(task)
         db.session.commit()
         flash('Task created successfully!')
