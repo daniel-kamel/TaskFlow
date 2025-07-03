@@ -3,8 +3,9 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import pytest
-from models import db, User
+from models import db, User, Task
 from flask import Flask
+from datetime import datetime, timedelta
 
 @pytest.fixture
 def app():
@@ -34,3 +35,28 @@ def test_user_password_hashing(session):
 def test_user_creation_requires_password():
     with pytest.raises(ValueError):
         User(username='bob', email='bob@example.com')
+
+def test_task_creation_and_defaults(session):
+    user = User(username='bob', email='bob@example.com', password='pw')
+    session.add(user)
+    session.commit()
+    task = Task(title='Test Task', user_id=user.id)
+    session.add(task)
+    session.commit()
+    assert task.id is not None
+    assert task.status == 'Pending'
+    assert task.author == user
+    assert isinstance(task.created_at, datetime)
+    assert task.due_date is None
+
+def test_task_due_date(session):
+    user = User(username='carol', email='carol@example.com', password='pw')
+    session.add(user)
+    session.commit()
+    due = datetime.utcnow() + timedelta(days=3)
+    task = Task(title='Due Task', user_id=user.id, due_date=due)
+    session.add(task)
+    session.commit()
+    assert task.due_date == due
+    assert task.status == 'Pending'
+    assert task.author.username == 'carol'
