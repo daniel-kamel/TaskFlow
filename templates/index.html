@@ -1,2 +1,28 @@
-<h2>Hello, {{ current_user.username }}!</h2>
-<a href="{{ url_for('logout') }}">Logout</a>
+{% extends 'base.html' %}
+{% block title %}Home - TaskFlow{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Welcome, {{ current_user.username }}!</h2>
+  <a href="{{ url_for('create_task') }}" class="btn btn-primary">+ New Task</a>
+</div>
+{% if tasks %}
+  <div class="row">
+    {% for task in tasks %}
+      <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">{{ task.title }}</h5>
+            <p class="card-text">{{ task.description or 'No description.' }}</p>
+            <span class="badge bg-{{ 'success' if task.status == 'Completed' else 'secondary' }}">{{ task.status }}</span>
+            {% if task.due_date %}
+              <div class="mt-2"><small>Due: {{ task.due_date.strftime('%Y-%m-%d') }}</small></div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="alert alert-info">You have no tasks yet.</div>
+{% endif %}
+{% endblock %}
