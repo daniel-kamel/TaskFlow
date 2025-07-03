@@ -1,0 +1,17 @@
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+<h2>Register</h2>
+<form method="post">
+    Username: <input name="username"><br>
+    Email: <input name="email"><br>
+    Password: <input name="password" type="password"><br>
+    <input type="submit" value="Register">
+</form>
+<a href="{{ url_for('login') }}">Login</a>
