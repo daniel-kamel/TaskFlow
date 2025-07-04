@@ -30,6 +30,12 @@
               <option value="Pending" {{ 'selected' if task.status == 'Pending' else '' }}>Pending</option>
               <option value="Completed" {{ 'selected' if task.status == 'Completed' else '' }}>Completed</option>
             </select>
+            <div class="form-text">
+              <small class="text-muted">
+                <i class="bi bi-info-circle"></i>
+                Status automatically updates based on start date: "Not started" if start date is in the future, "Pending" if start date has passed.
+              </small>
+            </div>
           </div>
           <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary flex-fill">Update Task</button>

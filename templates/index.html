@@ -38,7 +38,7 @@
                   No description.
                 {% endif %}
               </p>
-              <span class="badge bg-{{ 'success' if task.status == 'Completed' else 'warning' if task.status == 'Pending' else 'secondary' }}">{{ task.status }}</span>
+              <span class="badge bg-{{ 'success' if task.get_effective_status() == 'Completed' else 'warning' if task.get_effective_status() == 'Pending' else 'secondary' }}">{{ task.get_effective_status() }}</span>
               {% if task.start_date %}
                 <div class="mt-2"><small>Start: {{ task.start_date.strftime('%Y-%m-%d') }}</small></div>
               {% endif %}
@@ -47,7 +47,7 @@
               {% endif %}
             </div>
             <div class="d-flex flex-column gap-1 ms-2" onclick="event.stopPropagation();">
-              {% if task.status != 'Completed' %}
+              {% if task.get_effective_status() != 'Completed' %}
                 <form method="post" action="{{ url_for('complete_task', task_id=task.id) }}" style="display: inline;">
                   <button type="submit" class="btn btn-sm btn-outline-success" title="Mark as Completed">
                     <i class="bi bi-check-circle"></i>
@@ -94,7 +94,7 @@
           </div>
           <div class="col-md-4">
             <h6>Details</h6>
-            <p><strong>Status:</strong> <span class="badge bg-{{ 'success' if task.status == 'Completed' else 'warning' if task.status == 'Pending' else 'secondary' }}">{{ task.status }}</span></p>
+            <p><strong>Status:</strong> <span class="badge bg-{{ 'success' if task.get_effective_status() == 'Completed' else 'warning' if task.get_effective_status() == 'Pending' else 'secondary' }}">{{ task.get_effective_status() }}</span></p>
             {% if task.start_date %}
               <p><strong>Start Date:</strong> {{ task.start_date.strftime('%Y-%m-%d') }}</p>
             {% endif %}
@@ -106,7 +106,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        {% if task.status != 'Completed' %}
+        {% if task.get_effective_status() != 'Completed' %}
           <form method="post" action="{{ url_for('complete_task', task_id=task.id) }}" style="display: inline;">
             <button type="submit" class="btn btn-success">
               <i class="bi bi-check-circle"></i> Mark as Completed

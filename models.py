@@ -60,5 +60,21 @@ class Task(db.Model):
     due_date = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
+    def get_effective_status(self):
+        """Returns the effective status based on start date and current status."""
+        if self.status == 'Completed':
+            return 'Completed'
+
+        if not self.start_date:
+            return 'Not started'
+
+        current_date = datetime.utcnow().date()
+        start_date = self.start_date.date()
+
+        if current_date < start_date:
+            return 'Not started'
+        else:
+            return 'Pending'
+
     def __repr__(self):
         return f'<Task {self.title} (Status: {self.status})>'

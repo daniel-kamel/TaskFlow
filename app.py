@@ -115,6 +115,8 @@ def create_task():
                 flash('Invalid due date format.', 'error')
                 return redirect(url_for('create_task'))
         task = Task(title=title, description=description, start_date=start_date_obj, due_date=due_date_obj, user_id=current_user.id)
+        # Set initial status based on start date
+        task.status = task.get_effective_status()
         db.session.add(task)
         db.session.commit()
         flash('Task created successfully!')
@@ -156,6 +158,11 @@ def edit_task(task_id):
                 return redirect(url_for('edit_task', task_id=task_id))
         task.start_date = start_date_obj
         task.due_date = due_date_obj
+
+        # Auto-update status based on start date (only if not completed)
+        if task.status != 'Completed':
+            task.status = task.get_effective_status()
+
         db.session.commit()
         flash('Task updated successfully!')
         return redirect(url_for('index'))
