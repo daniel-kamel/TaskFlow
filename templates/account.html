@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Account Settings - TaskFlow{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="card-title mb-4 text-center">Account Settings</h2>
+
+        <!-- Profile Information -->
+        <div class="mb-4">
+          <h5>Profile Information</h5>
+          <form method="post" action="{{ url_for('account') }}">
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+          </form>
+        </div>
+
+        <hr>
+
+        <!-- Change Password -->
+        <div class="mb-4">
+          <h5>Change Password</h5>
+          <form method="post" action="{{ url_for('account') }}">
+            <div class="mb-3">
+              <label for="current_password" class="form-label">Current Password</label>
+              <input type="password" class="form-control" id="current_password" name="current_password" required>
+            </div>
+            <div class="mb-3">
+              <label for="new_password" class="form-label">New Password</label>
+              <input type="password" class="form-control" id="new_password" name="new_password" required>
+            </div>
+            <div class="mb-3">
+              <label for="confirm_new_password" class="form-label">Confirm New Password</label>
+              <input type="password" class="form-control" id="confirm_new_password" name="confirm_new_password" required>
+            </div>
+            <button type="submit" class="btn btn-warning">Change Password</button>
+          </form>
+        </div>
+
+        <div class="text-center">
+          <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Home</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

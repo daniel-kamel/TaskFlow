@@ -198,6 +198,56 @@ def complete_task(task_id):
     flash('Task marked as completed!')
     return redirect(url_for('index'))
 
+@app.route('/account', methods=['GET', 'POST'])
+@login_required
+def account():
+    """Account settings page."""
+    if request.method == 'POST':
+        # Check if this is a profile update or password change
+        if 'current_password' in request.form:
+            # Password change
+            current_password = request.form['current_password']
+            new_password = request.form['new_password']
+            confirm_new_password = request.form['confirm_new_password']
+
+            if not current_user.check_password(current_password):
+                flash('Current password is incorrect.', 'error')
+                return redirect(url_for('account'))
+
+            if new_password != confirm_new_password:
+                flash('New passwords do not match.', 'error')
+                return redirect(url_for('account'))
+
+            if len(new_password) < 6:
+                flash('New password must be at least 6 characters long.', 'error')
+                return redirect(url_for('account'))
+
+            current_user.set_password(new_password)
+            db.session.commit()
+            flash('Password updated successfully!')
+            return redirect(url_for('account'))
+        else:
+            # Profile update
+            username = request.form['username']
+            email = request.form['email']
+
+            # Check if username or email already exists (excluding current user)
+            existing_user = User.query.filter(
+                (User.username == username) | (User.email == email)
+            ).filter(User.id != current_user.id).first()
+
+            if existing_user:
+                flash('Username or email already exists.', 'error')
+                return redirect(url_for('account'))
+
+            current_user.username = username
+            current_user.email = email
+            db.session.commit()
+            flash('Profile updated successfully!')
+            return redirect(url_for('account'))
+
+    return render_template('account.html')
+
 @app.cli.command("init-db")
 def init_db():
     db.create_all()
