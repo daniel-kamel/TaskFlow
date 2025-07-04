@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from config import config  # Import the selected config
 from models import db, User, Task
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -247,6 +247,27 @@ def account():
             return redirect(url_for('account'))
 
     return render_template('account.html')
+
+@app.route('/calendar')
+@login_required
+def calendar():
+    return render_template('calendar.html')
+
+@app.route('/api/tasks')
+@login_required
+def api_tasks():
+    tasks = current_user.tasks
+    events = []
+    for task in tasks:
+        events.append({
+            'id': task.id,
+            'title': task.title,
+            'description': task.description,
+            'start': task.start_date.strftime('%Y-%m-%d') if task.start_date else None,
+            'end': task.due_date.strftime('%Y-%m-%d') if task.due_date else None,
+            'status': task.status
+        })
+    return jsonify(events)
 
 @app.cli.command("init-db")
 def init_db():

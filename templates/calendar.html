@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Calendar | TaskFlow{% endblock %}
+{% block head %}
+  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css' rel='stylesheet' />
+  <style>
+    #calendar { max-width: 900px; margin: 40px auto; }
+  </style>
+{% endblock %}
+{% block content %}
+  <h2 class="mb-4">Task Calendar</h2>
+  <div id='calendar'></div>
+  <!-- Modal for event details -->
+  <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="eventModalLabel">Task Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h5 id="modalTitle"></h5>
+          <p id="modalDescription"></p>
+          <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+          <p><strong>Start:</strong> <span id="modalStart"></span></p>
+          <p><strong>Due:</strong> <span id="modalEnd"></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,dayGridWeek,dayGridDay'
+        },
+        events: '/api/tasks',
+        eventClick: function(info) {
+          var event = info.event;
+          document.getElementById('modalTitle').textContent = event.title;
+          document.getElementById('modalDescription').textContent = event.extendedProps.description || '';
+          document.getElementById('modalStatus').textContent = event.extendedProps.status || '';
+          document.getElementById('modalStart').textContent = event.start ? event.start.toLocaleDateString() : '';
+          document.getElementById('modalEnd').textContent = event.end ? event.end.toLocaleDateString() : '';
+          var modal = new bootstrap.Modal(document.getElementById('eventModal'));
+          modal.show();
+        }
+      });
+      calendar.render();
+    });
+  </script>
+{% endblock %}
