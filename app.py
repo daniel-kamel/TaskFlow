@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from config import config  # Import the selected config
 from models import db, User, Task
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from datetime import datetime
 
 app = Flask(__name__)
 app.config.from_object(config)  # Apply configuration
@@ -71,8 +72,23 @@ def logout():
 @login_required
 def index():
     """Home page showing user's tasks."""
+    sort_by = request.args.get('sort', 'created')
     tasks = current_user.tasks
-    return render_template('index.html', tasks=tasks)
+
+    # Convert to list for sorting
+    tasks_list = list(tasks)
+
+    if sort_by == 'start_date':
+        # Sort by start date, tasks without start date go to the end
+        tasks_list.sort(key=lambda x: (x.start_date is None, x.start_date or datetime.max))
+    elif sort_by == 'due_date':
+        # Sort by due date, tasks without due date go to the end
+        tasks_list.sort(key=lambda x: (x.due_date is None, x.due_date or datetime.max))
+    else:
+        # Default sort by creation date (newest first)
+        tasks_list.sort(key=lambda x: x.created_at, reverse=True)
+
+    return render_template('index.html', tasks=tasks_list, current_sort=sort_by)
 
 @app.route('/create-task', methods=['GET', 'POST'])
 @login_required
