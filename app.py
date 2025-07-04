@@ -141,6 +141,21 @@ def delete_task(task_id):
     flash('Task deleted successfully!')
     return redirect(url_for('index'))
 
+@app.route('/complete-task/<int:task_id>', methods=['POST'])
+@login_required
+def complete_task(task_id):
+    """Mark task as completed."""
+    task = Task.query.get_or_404(task_id)
+    # Ensure the task belongs to the current user
+    if task.user_id != current_user.id:
+        flash('You can only modify your own tasks.', 'error')
+        return redirect(url_for('index'))
+
+    task.status = 'Completed'
+    db.session.commit()
+    flash('Task marked as completed!')
+    return redirect(url_for('index'))
+
 @app.cli.command("init-db")
 def init_db():
     db.create_all()
