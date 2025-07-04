@@ -54,8 +54,9 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
-    status = db.Column(db.String(20), default='Pending')  # e.g., 'Pending', 'Completed'
+    status = db.Column(db.String(20), default='Not started')  # e.g., 'Not started', 'Pending', 'Completed'
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    start_date = db.Column(db.DateTime, default=datetime.utcnow)
     due_date = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 

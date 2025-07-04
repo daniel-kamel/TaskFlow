@@ -16,12 +16,17 @@
             <textarea class="form-control" id="description" name="description" rows="3">{{ task.description or '' }}</textarea>
           </div>
           <div class="mb-3">
+            <label for="start_date" class="form-label">Start Date</label>
+            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ task.start_date.strftime('%Y-%m-%d') if task.start_date else '' }}">
+          </div>
+          <div class="mb-3">
             <label for="due_date" class="form-label">Due Date</label>
             <input type="date" class="form-control" id="due_date" name="due_date" value="{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}">
           </div>
           <div class="mb-3">
             <label for="status" class="form-label">Status</label>
             <select class="form-select" id="status" name="status">
+              <option value="Not started" {{ 'selected' if task.status == 'Not started' else '' }}>Not started</option>
               <option value="Pending" {{ 'selected' if task.status == 'Pending' else '' }}>Pending</option>
               <option value="Completed" {{ 'selected' if task.status == 'Completed' else '' }}>Completed</option>
             </select>

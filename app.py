@@ -81,21 +81,31 @@ def create_task():
     if request.method == 'POST':
         title = request.form['title']
         description = request.form.get('description')
+        start_date = request.form.get('start_date')
         due_date = request.form.get('due_date')
         from datetime import datetime
+        start_date_obj = None
         due_date_obj = None
+        if start_date:
+            try:
+                start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+            except ValueError:
+                flash('Invalid start date format.', 'error')
+                return redirect(url_for('create_task'))
         if due_date:
             try:
                 due_date_obj = datetime.strptime(due_date, '%Y-%m-%d')
             except ValueError:
                 flash('Invalid due date format.', 'error')
                 return redirect(url_for('create_task'))
-        task = Task(title=title, description=description, due_date=due_date_obj, user_id=current_user.id)
+        task = Task(title=title, description=description, start_date=start_date_obj, due_date=due_date_obj, user_id=current_user.id)
         db.session.add(task)
         db.session.commit()
         flash('Task created successfully!')
         return redirect(url_for('index'))
-    return render_template('create_task.html')
+    from datetime import datetime
+    today_date = datetime.now().strftime('%Y-%m-%d')
+    return render_template('create_task.html', today_date=today_date)
 
 @app.route('/edit-task/<int:task_id>', methods=['GET', 'POST'])
 @login_required
@@ -110,16 +120,25 @@ def edit_task(task_id):
     if request.method == 'POST':
         task.title = request.form['title']
         task.description = request.form.get('description')
-        task.status = request.form.get('status', 'Pending')
+        task.status = request.form.get('status', 'Not started')
+        start_date = request.form.get('start_date')
         due_date = request.form.get('due_date')
         from datetime import datetime
+        start_date_obj = None
         due_date_obj = None
+        if start_date:
+            try:
+                start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+            except ValueError:
+                flash('Invalid start date format.', 'error')
+                return redirect(url_for('edit_task', task_id=task_id))
         if due_date:
             try:
                 due_date_obj = datetime.strptime(due_date, '%Y-%m-%d')
             except ValueError:
                 flash('Invalid due date format.', 'error')
                 return redirect(url_for('edit_task', task_id=task_id))
+        task.start_date = start_date_obj
         task.due_date = due_date_obj
         db.session.commit()
         flash('Task updated successfully!')

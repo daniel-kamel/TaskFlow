@@ -14,9 +14,12 @@
             <div class="flex-grow-1">
               <h5 class="card-title">{{ task.title }}</h5>
               <p class="card-text">{{ task.description or 'No description.' }}</p>
-              <span class="badge bg-{{ 'success' if task.status == 'Completed' else 'warning' }}">{{ task.status }}</span>
+              <span class="badge bg-{{ 'success' if task.status == 'Completed' else 'warning' if task.status == 'Pending' else 'secondary' }}">{{ task.status }}</span>
+              {% if task.start_date %}
+                <div class="mt-2"><small>Start: {{ task.start_date.strftime('%Y-%m-%d') }}</small></div>
+              {% endif %}
               {% if task.due_date %}
-                <div class="mt-2"><small>Due: {{ task.due_date.strftime('%Y-%m-%d') }}</small></div>
+                <div class="mt-1"><small>Due: {{ task.due_date.strftime('%Y-%m-%d') }}</small></div>
               {% endif %}
             </div>
             <div class="d-flex flex-column gap-1 ms-2">
