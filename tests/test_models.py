@@ -44,7 +44,7 @@ def test_task_creation_and_defaults(session):
     session.add(task)
     session.commit()
     assert task.id is not None
-    assert task.status == 'Pending'
+    assert task.status == 'Not started'
     assert task.author == user
     assert isinstance(task.created_at, datetime)
     assert task.due_date is None
@@ -58,5 +58,38 @@ def test_task_due_date(session):
     session.add(task)
     session.commit()
     assert task.due_date == due
-    assert task.status == 'Pending'
+    assert task.status == 'Not started'
     assert task.author.username == 'carol'
+
+def test_task_effective_status(session):
+    """Test the get_effective_status method."""
+    user = User(username='dave', email='dave@example.com', password='pw')
+    session.add(user)
+    session.commit()
+
+    # Test task with no start date (but it will have default current time)
+    task1 = Task(title='No Start Date', user_id=user.id)
+    session.add(task1)
+    session.commit()
+    # Since start_date defaults to current time, it should be 'Pending'
+    assert task1.get_effective_status() == 'Pending'
+
+    # Test task with future start date
+    future_date = datetime.utcnow() + timedelta(days=1)
+    task2 = Task(title='Future Task', user_id=user.id, start_date=future_date)
+    session.add(task2)
+    session.commit()
+    assert task2.get_effective_status() == 'Not started'
+
+    # Test task with past start date
+    past_date = datetime.utcnow() - timedelta(days=1)
+    task3 = Task(title='Past Task', user_id=user.id, start_date=past_date)
+    session.add(task3)
+    session.commit()
+    assert task3.get_effective_status() == 'Pending'
+
+    # Test completed task
+    task4 = Task(title='Completed Task', user_id=user.id, status='Completed')
+    session.add(task4)
+    session.commit()
+    assert task4.get_effective_status() == 'Completed'
